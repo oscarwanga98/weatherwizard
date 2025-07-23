@@ -1,0 +1,82 @@
+"Create a responsive weather web application with the following features and requirements:
+Core Features:
+
+    Current Weather Display:
+
+        Location name (city, country)
+
+        Current temperature (in Celsius/Fahrenheit, toggleable)
+
+        Weather condition (e.g., sunny, rainy) with an icon
+
+        Real-feel temperature
+
+        Humidity, wind speed, pressure, and UV index
+
+    Forecast Section:
+
+        5-day weather forecast with:
+
+            Day/date
+
+            High/low temperatures
+
+            Weather condition icons
+
+        Hourly forecast (next 12-24 hours) with temperature & conditions
+
+    Location Services:
+
+        Auto-detect user location (via browser geolocation API)
+
+        Manual city search with autocomplete
+
+    Interactive UI Elements:
+
+        Toggle between Celsius/Fahrenheit
+
+        Dark/light mode switch
+
+        Animated weather icons (e.g., moving clouds, rain effects)
+
+    Additional Features:
+
+        Severe weather alerts (if applicable)
+
+        Air quality index (AQI)
+
+        Sunrise/sunset times
+
+        Radar/map overlay (optional, e.g., using OpenWeatherMap or WeatherAPI)
+
+Technical Requirements:
+
+    Responsive Design: Works on mobile, tablet, and desktop (use CSS Flexbox/Grid).
+
+    API Integration: Fetch data from a free weather API (e.g., OpenWeatherMap, WeatherAPI, or AccuWeather).
+
+    Performance: Optimized loading (cache API responses, lazy-load images).
+
+    Accessibility: ARIA labels, keyboard navigation, and contrast-friendly colors.
+
+    Tech Stack:
+
+        Frontend: HTML5, CSS3 (SASS optional), JavaScript (React/Vue.js optional).
+
+        Backend (if needed): Node.js/Express for proxy API calls (to hide API keys).
+
+Design Guidelines:
+
+    Clean, minimalist UI with intuitive icons.
+
+    Use a color scheme that reflects weather conditions (e.g., blue for cold, orange for warm).
+
+    Smooth transitions/animations for a polished feel.
+
+Stretch Goals (Optional):
+
+    Save favorite locations.
+
+    Weather data charts (temperature/humidity trends).
+
+    PWA (Progressive Web App) support for offline use."*
