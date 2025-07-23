@@ -4,6 +4,27 @@ import { createServer, type Server } from "http";
 export async function registerRoutes(app: Express): Promise<Server> {
   const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY || process.env.OPENWEATHERMAP_API_KEY || "demo_key";
   
+  // API key validation endpoint for debugging
+  app.get("/api/debug/key-status", async (req, res) => {
+    try {
+      const testResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=0&lon=0&appid=${OPENWEATHER_API_KEY}`);
+      const testData = await testResponse.json();
+      
+      res.json({
+        keyExists: !!OPENWEATHER_API_KEY && OPENWEATHER_API_KEY !== "demo_key",
+        keyLength: OPENWEATHER_API_KEY?.length || 0,
+        apiResponse: testData,
+        status: testResponse.status
+      });
+    } catch (error) {
+      res.json({
+        keyExists: !!OPENWEATHER_API_KEY && OPENWEATHER_API_KEY !== "demo_key",
+        keyLength: OPENWEATHER_API_KEY?.length || 0,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  
   // Get weather data by coordinates
   app.get("/api/weather/:lat/:lon", async (req, res) => {
     try {
@@ -18,7 +39,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ]);
 
       if (!currentResponse.ok || !forecastResponse.ok) {
-        throw new Error('Failed to fetch weather data');
+        // Provide more detailed error information
+        const currentError = !currentResponse.ok ? await currentResponse.text() : null;
+        const forecastError = !forecastResponse.ok ? await forecastResponse.text() : null;
+        
+        console.error('OpenWeatherMap API Error Details:', {
+          current: { status: currentResponse.status, error: currentError },
+          forecast: { status: forecastResponse.status, error: forecastError },
+          keyLength: OPENWEATHER_API_KEY?.length
+        });
+        
+        throw new Error(`Weather API Error - Current: ${currentResponse.status}, Forecast: ${forecastResponse.status}`);
       }
 
       const currentData = await currentResponse.json();
