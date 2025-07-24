@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = 'light' | 'dark';
+type Theme = 'light' | 'dark' | 'cosmic';
 
 interface ThemeContextType {
   theme: Theme;
@@ -17,28 +17,38 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
     const savedTheme = localStorage.getItem('theme') as Theme;
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-    setTheme(initialTheme);
+    // Validate saved theme - if invalid, fallback to system preference
+    const validThemes: Theme[] = ['light', 'dark', 'cosmic'];
+    const initialTheme = (savedTheme && validThemes.includes(savedTheme)) 
+      ? savedTheme 
+      : (systemPrefersDark ? 'dark' : 'light');
     
-    // Apply theme to document
-    if (initialTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    setTheme(initialTheme);
+    applyTheme(initialTheme);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+  const applyTheme = (newTheme: Theme) => {
+    // Remove all theme classes
+    document.documentElement.classList.remove('dark', 'cosmic');
     
-    // Apply theme to document
+    // Apply the new theme class (light is default, no class needed)
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    } else if (newTheme === 'cosmic') {
+      document.documentElement.classList.add('cosmic');
     }
+  };
+
+  const toggleTheme = () => {
+    // Cycle through themes: light → dark → cosmic → light
+    const themeOrder: Theme[] = ['light', 'dark', 'cosmic'];
+    const currentIndex = themeOrder.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themeOrder.length;
+    const newTheme = themeOrder[nextIndex];
+    
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
   };
 
   return (

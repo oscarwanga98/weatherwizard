@@ -60,6 +60,64 @@
   --weather-hot: hsl(0, 84%, 60%);
 }
 
+.cosmic {
+  --background: hsl(235, 46%, 10%);
+  --foreground: hsl(280, 30%, 90%);
+  --muted: hsl(235, 25%, 18%);
+  --muted-foreground: hsl(280, 15%, 65%);
+  --popover: hsl(235, 46%, 12%);
+  --popover-foreground: hsl(280, 30%, 90%);
+  --card: hsl(235, 46%, 12%);
+  --card-foreground: hsl(280, 30%, 90%);
+  --border: hsl(235, 25%, 22%);
+  --input: hsl(235, 25%, 20%);
+  --primary: hsl(270, 91%, 65%);
+  --primary-foreground: hsl(280, 15%, 15%);
+  --secondary: hsl(235, 25%, 18%);
+  --secondary-foreground: hsl(280, 30%, 90%);
+  --accent: hsl(260, 60%, 25%);
+  --accent-foreground: hsl(280, 30%, 90%);
+  --destructive: hsl(348, 86%, 61%);
+  --destructive-foreground: hsl(280, 30%, 90%);
+  --ring: hsl(270, 91%, 65%);
+  --radius: 0.5rem;
+  
+  /* Cosmic theme weather colors */
+  --weather-cold: hsl(200, 80%, 70%);
+  --weather-mild: hsl(150, 70%, 60%);
+  --weather-warm: hsl(45, 90%, 65%);
+  --weather-hot: hsl(15, 85%, 65%);
+  
+  /* Cosmic gradient background with stars */
+  background: 
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(168, 85, 247, 0.6), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(147, 51, 234, 0.8), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 160px 30px, rgba(192, 132, 252, 0.7), transparent),
+    linear-gradient(135deg, 
+      hsl(235, 46%, 8%) 0%,
+      hsl(260, 40%, 12%) 25%,
+      hsl(280, 35%, 10%) 50%,
+      hsl(300, 40%, 12%) 75%,
+      hsl(235, 46%, 8%) 100%);
+  background-size: 200px 100px, 200px 100px, 200px 100px, 200px 100px, 200px 100px, 100% 100%;
+  background-attachment: fixed;
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/* Special cosmic effects for cards */
+.cosmic .weather-card {
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: rgba(30, 25, 50, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+.cosmic .weather-card:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.2);
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -91,12 +149,40 @@
   }
 }
 
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes cosmic-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.6), 0 0 40px rgba(147, 51, 234, 0.3);
+  }
+}
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.cosmic-glow {
+  animation: cosmic-glow 3s ease-in-out infinite;
 }
 
 /* Weather condition based colors */
