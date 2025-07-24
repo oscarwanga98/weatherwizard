@@ -28,7 +28,7 @@ The application follows a full-stack monolithic architecture with clear separati
 ## Key Components
 
 ### Client-Side Components
-- **Theme System**: Dark/light mode with system preference detection and localStorage persistence
+- **Theme System**: Five-theme system with base themes (light/dark/cosmic) and seasonal overlays (Christmas/Halloween) with localStorage persistence
 - **Geolocation**: Browser-based location detection with error handling
 - **Weather Display**: Modular components for current weather, forecasts, air quality, and UV index
 - **Search Functionality**: City search with autocomplete capabilities
@@ -43,7 +43,10 @@ The application follows a full-stack monolithic architecture with clear separati
 ### UI Component Library
 - **shadcn/ui**: Comprehensive component library built on Radix UI primitives
 - **Accessibility**: ARIA-compliant components with keyboard navigation
-- **Theming**: CSS custom properties for consistent theming across light/dark modes
+- **Theming**: Advanced CSS custom properties system supporting multiple theme layers:
+  - Base themes: Light, Dark, Cosmic (space-inspired with purple tones and star effects)
+  - Seasonal overlays: Christmas (red/green with festive gradients), Halloween (orange/purple with spooky effects)
+  - Animated theme-specific effects and transitions
 
 ## Data Flow
 

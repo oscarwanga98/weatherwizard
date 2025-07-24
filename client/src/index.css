@@ -126,3 +126,117 @@
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
+
+/* Christmas Theme */
+.christmas {
+  /* Christmas color variables */
+  --seasonal-primary: hsl(0, 84%, 60%);
+  --seasonal-secondary: hsl(120, 60%, 25%);
+  --seasonal-accent: hsl(45, 100%, 50%);
+  
+  /* Override some colors for Christmas feel */
+  --primary: hsl(0, 84%, 60%);
+  --accent: hsl(120, 60%, 25%);
+  --border: hsl(0, 30%, 85%);
+  
+  /* Christmas gradient background */
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(34, 139, 34, 0.1), transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(220, 20, 60, 0.1), transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(255, 215, 0, 0.05), transparent 50%),
+    linear-gradient(135deg, 
+      hsl(0, 30%, 98%) 0%,
+      hsl(120, 30%, 96%) 25%,
+      hsl(0, 30%, 98%) 50%,
+      hsl(120, 30%, 96%) 75%,
+      hsl(0, 30%, 98%) 100%);
+  background-attachment: fixed;
+}
+
+.christmas.dark {
+  /* Dark Christmas theme */
+  --background: hsl(0, 30%, 8%);
+  --foreground: hsl(0, 30%, 95%);
+  --card: hsl(0, 30%, 10%);
+  --card-foreground: hsl(0, 30%, 95%);
+  --muted: hsl(0, 20%, 15%);
+  --border: hsl(0, 30%, 20%);
+  
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(34, 139, 34, 0.2), transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(220, 20, 60, 0.2), transparent 50%),
+    linear-gradient(135deg, 
+      hsl(0, 30%, 5%) 0%,
+      hsl(120, 30%, 8%) 25%,
+      hsl(0, 30%, 5%) 50%,
+      hsl(120, 30%, 8%) 75%,
+      hsl(0, 30%, 5%) 100%);
+  background-attachment: fixed;
+}
+
+/* Halloween Theme */
+.halloween {
+  /* Halloween color variables */
+  --seasonal-primary: hsl(25, 100%, 50%);
+  --seasonal-secondary: hsl(270, 50%, 40%);
+  --seasonal-accent: hsl(60, 100%, 50%);
+  
+  /* Override colors for Halloween feel */
+  --primary: hsl(25, 100%, 50%);
+  --accent: hsl(270, 50%, 40%);
+  --border: hsl(25, 30%, 80%);
+  
+  /* Halloween gradient background with spooky effects */
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.1), transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(75, 0, 130, 0.1), transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 140, 0, 0.05), transparent 50%),
+    linear-gradient(135deg, 
+      hsl(25, 25%, 95%) 0%,
+      hsl(270, 15%, 92%) 25%,
+      hsl(25, 25%, 95%) 50%,
+      hsl(270, 15%, 92%) 75%,
+      hsl(25, 25%, 95%) 100%);
+  background-attachment: fixed;
+}
+
+.halloween.dark {
+  /* Dark Halloween theme */
+  --background: hsl(25, 30%, 6%);
+  --foreground: hsl(25, 30%, 95%);
+  --card: hsl(25, 30%, 8%);
+  --card-foreground: hsl(25, 30%, 95%);
+  --muted: hsl(25, 20%, 12%);
+  --border: hsl(25, 30%, 18%);
+  
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.3), transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(75, 0, 130, 0.3), transparent 50%),
+    linear-gradient(135deg, 
+      hsl(25, 30%, 3%) 0%,
+      hsl(270, 30%, 5%) 25%,
+      hsl(25, 30%, 3%) 50%,
+      hsl(270, 30%, 5%) 75%,
+      hsl(25, 30%, 3%) 100%);
+  background-attachment: fixed;
+}
+
+/* Seasonal animation effects */
+@keyframes pumpkin-glow {
+  0%, 100% { 
+    text-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+  }
+  50% { 
+    text-shadow: 0 0 20px rgba(255, 140, 0, 0.8), 0 0 30px rgba(255, 69, 0, 0.5);
+  }
+}
+
+.christmas .seasonal-effect {
+  color: var(--seasonal-primary);
+  animation: twinkle 1.5s ease-in-out infinite;
+}
+
+.halloween .seasonal-effect {
+  color: var(--seasonal-primary);
+  animation: pumpkin-glow 2s ease-in-out infinite;
+}
