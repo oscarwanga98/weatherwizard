@@ -20,7 +20,7 @@ export function Header({ units, onUnitsChange, onLocationClick }: HeaderProps) {
           
           <div className="flex items-center space-x-4">
             {/* Temperature Unit Toggle */}
-            <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <div className="flex items-center bg-gray-90 dark:bg-gray-700 rounded-lg p-1">
               <button
                 onClick={() => onUnitsChange('metric')}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
