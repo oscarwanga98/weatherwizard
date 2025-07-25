@@ -22,7 +22,8 @@ export default function Home() {
   } = useWeather(coordinates, units);
   
   const { 
-    getCurrentLocation, 
+    getCurrentLocation,   
+    
     isLoading: isLocationLoading 
   } = useGeolocation();
 
