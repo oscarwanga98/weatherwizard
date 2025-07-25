@@ -25,7 +25,7 @@ export default function Home() {
     getCurrentLocation, 
     isLoading: isLocationLoading 
   } = useGeolocation();
-
+//boss
   const handleLocationSelect = (lat: number, lon: number) => {
     setCoordinates({ lat, lon });
   };
