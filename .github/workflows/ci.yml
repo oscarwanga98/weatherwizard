@@ -69,8 +69,8 @@ jobs:
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
       with:
-        project_id: ${{ env.GCP_PROJECT_ID }}
-        credentials_json: ${{ env.GCP_SERVICE_ACCOUNT_KEY }}  
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}  
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
