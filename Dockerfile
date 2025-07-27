@@ -30,7 +30,9 @@ RUN npm ci --omit=dev
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/public ./public
+
+# Only copy public directory if it exists (conditional)
+COPY --from=builder /app/public ./public 2>/dev/null || echo "Public directory not found, skipping"
 
 # Expose the port your app runs on
 EXPOSE 3000
