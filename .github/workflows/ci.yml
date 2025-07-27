@@ -3,7 +3,7 @@ name: Build, Test, and Deploy
 on:
   push:
     branches: [ "oscarwanga98-patch-1" ]
-  workflow_dispatch: # Manual trigger
+  workflow_dispatch:
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -34,7 +34,7 @@ jobs:
         username: ${{ env.DOCKERHUB_USERNAME }}
         password: ${{ env.DOCKERHUB_TOKEN }}
 
-    - name: Extract metadata (tags, labels) for Docker
+    - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v4
       with:
@@ -46,7 +46,7 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
 
-    - name: Build and push Docker image
+    - name: Build and push
       uses: docker/build-push-action@v4
       with:
         context: .
@@ -68,7 +68,7 @@ jobs:
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
       with:
-        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} # Use secret directly
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}  # Direct secret reference
         project_id: ${{ env.GCP_PROJECT_ID }}
 
     - name: Set up Cloud SDK
