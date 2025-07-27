@@ -70,7 +70,14 @@ jobs:
       uses: google-github-actions/auth@v1
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-        credentials_json: ${{secrets.GCP_SERVICE_ACCOUNT_KEY}}  
+        credentials_json: ${{secrets.GCP_SERVICE_ACCOUNT_KEY}} 
+        create_credentials_file: true
+        export_environment_variables: true
+        access_token_lifetime: 3600s
+        access_token_scopes: |
+          https://www.googleapis.com/auth/cloud-platform
+          https://www.googleapis.com/auth/firebase.database
+        cleanup_credentials: true
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
