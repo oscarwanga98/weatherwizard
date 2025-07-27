@@ -14,6 +14,9 @@ RUN npm ci --include=dev
 # Copy all source files
 COPY . .
 
+# Create empty public directory if it doesn't exist
+RUN mkdir -p public
+
 # Build the application
 RUN npm run build
 
@@ -30,9 +33,7 @@ RUN npm ci --omit=dev
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
-
-# Only copy public directory if it exists (conditional)
-COPY --from=builder /app/public ./public 2>/dev/null || echo "Public directory not found, skipping"
+COPY --from=builder /app/public ./public
 
 # Expose the port your app runs on
 EXPOSE 3000
