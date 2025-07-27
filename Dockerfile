@@ -3,15 +3,16 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files first for better caching
+# Copy configuration files first for better layer caching
 COPY package*.json ./
 COPY drizzle.config.ts ./
 COPY tsconfig.json ./
+COPY vite.config.ts ./
 
-# Install dependencies (including devDependencies for build)
+# Install all dependencies (including devDependencies)
 RUN npm ci --include=dev
 
-# Copy all source files
+# Copy source files (exclude what's in .dockerignore)
 COPY . .
 
 # Create empty public directory if it doesn't exist
@@ -25,18 +26,26 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files again
+# Copy production package files
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/.env ./.env
+
+# Ensure the user is node for security
+USER node
+
+# Health check (adjust endpoint as needed)
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
 # Expose the port your app runs on
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["node", "dist/index.js"]
