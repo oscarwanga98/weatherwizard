@@ -2,7 +2,7 @@ name: Build, Test, and Deploy
 
 on:
   push:
-    branches: [ "oscarwanga98-patch-1"]
+    branches: [ "oscarwanga98-patch-1" ]
   workflow_dispatch: # Manual trigger
 
 env:
@@ -10,7 +10,8 @@ env:
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   IMAGE_NAME: my-app
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+  GCP_REGION: us-central1
+  SERVICE_NAME: my-app-service
 
 jobs:
   build-test-push:
@@ -19,7 +20,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -46,7 +47,7 @@ jobs:
           type=semver,pattern={{major}}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         context: .
         push: true
@@ -55,29 +56,34 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    
+    - name: Run tests
+      run: |
+        docker build --target test -t ${{ env.IMAGE_NAME }}-test .
+        docker run --rm ${{ env.IMAGE_NAME }}-test npm test
 
   deploy-to-gcp:
     needs: build-test-push
     runs-on: ubuntu-latest
+    environment: production
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
       with:
-        credentials_json: ${{ env.GCP_SERVICE_ACCOUNT_KEY }}
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} # Use secret directly
+        project_id: ${{ env.GCP_PROJECT_ID }}
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
 
     - name: Deploy to Cloud Run
       run: |-
-        gcloud run deploy my-app-service \
-          --image=${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest \
+        gcloud run deploy ${{ env.SERVICE_NAME }} \
+          --image=${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
           --platform=managed \
-          --region=us-central1 \
+          --region=${{ env.GCP_REGION }} \
           --allow-unauthenticated \
           --project=${{ env.GCP_PROJECT_ID }}
