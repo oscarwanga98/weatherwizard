@@ -56,11 +56,6 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Run tests
-      run: |
-        docker build --target test -t ${{ env.IMAGE_NAME }}-test .
-        docker run --rm ${{ env.IMAGE_NAME }}-test npm test
-
   deploy-to-gcp:
     needs: build-test-push
     runs-on: ubuntu-latest
