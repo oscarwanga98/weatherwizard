@@ -15,7 +15,36 @@ env:
   SERVICE_NAME: cicd-plate
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # or your preferred version
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run unit tests
+      run: npx vitest run tests/simple-unit.test.ts tests/integration.test.ts --coverage
+
+    - name: Run headless E2E tests
+      run: npx vitest run tests/e2e-headless.test.ts
+
+    # Optional: Full browser E2E tests (requires Playwright)
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+
+    - name: Run browser E2E tests
+      run: npx playwright test
+
   build-test-push:
+    needs: test # Wait for tests to pass before building
     runs-on: ubuntu-latest
     environment: base
     
