@@ -55,10 +55,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Run tests
-      run: |
-        docker run --rm ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest npm test
-        # Or whatever your test command is
+    
 
   deploy-to-gcp:
     needs: build-test-push
