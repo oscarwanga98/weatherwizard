@@ -12,7 +12,8 @@ COPY vite.config.ts ./
 # Install all dependencies (including devDependencies)
 RUN npm ci --include=dev
 
-# Copy source files (exclude what's in .dockerignore)
+# Copy source files (excluding what's in .dockerignore)
+# Note: .env should NOT be in your repository for security reasons
 COPY . .
 
 # Create empty public directory if it doesn't exist
@@ -35,9 +36,15 @@ RUN npm ci --omit=dev --ignore-scripts
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.env ./.env
 
-# Ensure the user is node for security
+# Create a placeholder .env file (safer than copying from builder)
+# This ensures the container will run even if .env is missing
+RUN touch .env
+
+# Ensure proper permissions
+RUN chown -R node:node /app
+
+# Switch to non-root user for security
 USER node
 
 # Health check (adjust endpoint as needed)
