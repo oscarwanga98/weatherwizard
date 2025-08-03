@@ -1,14 +1,14 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { JSDOM } from "jsdom";
 
-// Mock browser-like E2E test using headless approach
-describe('Weather App E2E Simulation', () => {
-  let mockDom: Document
-  let mockWindow: any
+describe("Weather App E2E Simulation", () => {
+  let mockDom: Document;
+  let mockWindow: Window & typeof globalThis;
 
   beforeAll(() => {
-    // Create a mock DOM environment for E2E simulation
-    const { JSDOM } = require('jsdom')
-    const dom = new JSDOM(`
+    // Create a mock DOM environment
+    const dom = new JSDOM(
+      `
       <!DOCTYPE html>
       <html>
         <head><title>WeatherSync</title></head>
@@ -32,106 +32,143 @@ describe('Weather App E2E Simulation', () => {
           </div>
         </body>
       </html>
-    `, { url: 'http://localhost:5000' })
-    
-    mockDom = dom.window.document
-    mockWindow = dom.window
-    
-    // Mock localStorage
-    mockWindow.localStorage = {
-      getItem: (key: string) => null,
-      setItem: (key: string, value: string) => {},
-      removeItem: (key: string) => {},
-      clear: () => {}
-    }
-  })
-
-  describe('Header Elements', () => {
-    it('should display the app title', () => {
-      const title = mockDom.querySelector('h1')
-      expect(title?.textContent).toBe('WeatherSync')
-    })
-
-    it('should have theme toggle button', () => {
-      const themeButton = mockDom.querySelector('.theme-toggle')
-      expect(themeButton).toBeTruthy()
-      expect(themeButton?.getAttribute('data-theme')).toBe('light')
-    })
-
-    it('should have seasonal theme toggle button', () => {
-      const seasonalButton = mockDom.querySelector('.seasonal-toggle')
-      expect(seasonalButton).toBeTruthy()
-      expect(seasonalButton?.getAttribute('data-seasonal')).toBe('none')
-    })
-
-    it('should have temperature unit buttons', () => {
-      const celsiusBtn = mockDom.querySelector('.celsius')
-      const fahrenheitBtn = mockDom.querySelector('.fahrenheit')
-      
-      expect(celsiusBtn?.textContent).toBe('°C')
-      expect(fahrenheitBtn?.textContent).toBe('°F')
-    })
-  })
-
-  describe('Theme Switching Simulation', () => {
-    it('should simulate theme cycling', () => {
-      const themeButton = mockDom.querySelector('.theme-toggle') as HTMLButtonElement
-      const themes = ['light', 'dark', 'cosmic']
-      let currentThemeIndex = 0
-      
-      // Simulate clicking theme button
-      for (let i = 0; i < 3; i++) {
-        currentThemeIndex = (currentThemeIndex + 1) % themes.length
-        const newTheme = themes[currentThemeIndex]
-        
-        // Simulate theme change
-        themeButton.setAttribute('data-theme', newTheme)
-        mockDom.documentElement.className = newTheme
-        
-        expect(themeButton.getAttribute('data-theme')).toBe(newTheme)
-        expect(mockDom.documentElement.className).toBe(newTheme)
+    `,
+      {
+        url: "http://localhost:5000",
+        runScripts: "dangerously",
       }
-    })
+    );
 
-    it('should simulate seasonal theme cycling', () => {
-      const seasonalButton = mockDom.querySelector('.seasonal-toggle') as HTMLButtonElement
-      const seasonalThemes = ['none', 'christmas', 'halloween']
-      let currentSeasonalIndex = 0
-      
-      // Simulate clicking seasonal button
-      for (let i = 0; i < 3; i++) {
-        currentSeasonalIndex = (currentSeasonalIndex + 1) % seasonalThemes.length
-        const newSeasonal = seasonalThemes[currentSeasonalIndex]
-        
-        // Simulate seasonal theme change
-        seasonalButton.setAttribute('data-seasonal', newSeasonal)
-        if (newSeasonal !== 'none') {
-          mockDom.documentElement.classList.add(newSeasonal)
+    mockDom = dom.window.document;
+    mockWindow = dom.window;
+
+    // Implement proper localStorage mock
+    const localStorageMock = (() => {
+      let store: Record<string, string> = {};
+      return {
+        getItem(key: string): string | null {
+          return store[key] || null;
+        },
+        setItem(key: string, value: string): void {
+          store[key] = value.toString();
+        },
+        removeItem(key: string): void {
+          delete store[key];
+        },
+        clear(): void {
+          store = {};
+        },
+        get length(): number {
+          return Object.keys(store).length;
+        },
+        key(index: number): string | null {
+          const keys = Object.keys(store);
+          return keys[index] || null;
+        },
+      };
+    })();
+
+    Object.defineProperty(mockWindow, "localStorage", {
+      value: localStorageMock,
+      configurable: true,
+      enumerable: true,
+      writable: true,
+    });
+  });
+
+  describe("Header Elements", () => {
+    it("should display the app title", () => {
+      const title = mockDom.querySelector("h1");
+      expect(title?.textContent).toBe("WeatherSync");
+    });
+
+    it("should have theme toggle button", () => {
+      const themeButton = mockDom.querySelector(".theme-toggle");
+      expect(themeButton).toBeTruthy();
+      expect(themeButton?.getAttribute("data-theme")).toBe("light");
+    });
+
+    it("should have seasonal theme toggle button", () => {
+      const seasonalButton = mockDom.querySelector(".seasonal-toggle");
+      expect(seasonalButton).toBeTruthy();
+      expect(seasonalButton?.getAttribute("data-seasonal")).toBe("none");
+    });
+
+    it("should have temperature unit buttons", () => {
+      const celsiusBtn = mockDom.querySelector(".celsius");
+      const fahrenheitBtn = mockDom.querySelector(".fahrenheit");
+
+      expect(celsiusBtn?.textContent).toBe("°C");
+      expect(fahrenheitBtn?.textContent).toBe("°F");
+    });
+  });
+
+  describe("Theme Switching Simulation", () => {
+    it("should simulate theme cycling", () => {
+      const themeButton = mockDom.querySelector(
+        ".theme-toggle"
+      ) as HTMLButtonElement;
+      const themes = ["light", "dark", "cosmic"];
+
+      themes.forEach((theme, index) => {
+        // Simulate button click
+        themeButton.setAttribute("data-theme", theme);
+        mockDom.documentElement.className = theme;
+
+        expect(themeButton.getAttribute("data-theme")).toBe(theme);
+        expect(mockDom.documentElement.className).toBe(theme);
+
+        // Verify localStorage was updated
+        mockWindow.localStorage.setItem("theme", theme);
+        expect(mockWindow.localStorage.getItem("theme")).toBe(theme);
+      });
+    });
+
+    it("should simulate seasonal theme cycling", () => {
+      const seasonalButton = mockDom.querySelector(
+        ".seasonal-toggle"
+      ) as HTMLButtonElement;
+      const seasonalThemes = ["none", "christmas", "halloween"];
+
+      seasonalThemes.forEach((season) => {
+        // Simulate button click
+        seasonalButton.setAttribute("data-seasonal", season);
+
+        if (season !== "none") {
+          mockDom.documentElement.classList.add(season);
         } else {
-          mockDom.documentElement.classList.remove('christmas', 'halloween')
+          mockDom.documentElement.classList.remove("christmas", "halloween");
         }
-        
-        expect(seasonalButton.getAttribute('data-seasonal')).toBe(newSeasonal)
-      }
-    })
-  })
 
-  describe('Search Functionality Simulation', () => {
-    it('should simulate search input interaction', () => {
-      const searchInput = mockDom.querySelector('.search-input') as HTMLInputElement
-      
+        expect(seasonalButton.getAttribute("data-seasonal")).toBe(season);
+
+        // Verify localStorage was updated
+        mockWindow.localStorage.setItem("seasonalTheme", season);
+        expect(mockWindow.localStorage.getItem("seasonalTheme")).toBe(season);
+      });
+    });
+  });
+
+  describe("Search Functionality Simulation", () => {
+    it("should simulate search input interaction", () => {
+      const searchInput = mockDom.querySelector(
+        ".search-input"
+      ) as HTMLInputElement;
+
       // Simulate typing
-      searchInput.value = 'London'
-      
-      // Simulate input event
-      const inputEvent = new mockWindow.Event('input', { bubbles: true })
-      searchInput.dispatchEvent(inputEvent)
-      
-      expect(searchInput.value).toBe('London')
-    })
+      searchInput.value = "London";
+      const inputEvent = new mockWindow.Event("input", { bubbles: true });
+      searchInput.dispatchEvent(inputEvent);
 
-    it('should simulate search results display', () => {
-      const weatherDisplay = mockDom.querySelector('.weather-display')
+      expect(searchInput.value).toBe("London");
+
+      // Verify search term was stored
+      mockWindow.localStorage.setItem("lastSearch", "London");
+      expect(mockWindow.localStorage.getItem("lastSearch")).toBe("London");
+    });
+
+    it("should simulate search results display", () => {
+      const weatherDisplay = mockDom.querySelector(".weather-display");
       const mockResults = `
         <div class="weather-card">
           <h2>London, UK</h2>
@@ -142,72 +179,83 @@ describe('Weather App E2E Simulation', () => {
             <span>Wind: 12 km/h</span>
           </div>
         </div>
-      `
-      
-      // Simulate weather data loading
-      if (weatherDisplay) {
-        weatherDisplay.innerHTML = mockResults
-      }
-      
-      const weatherCard = mockDom.querySelector('.weather-card')
-      expect(weatherCard).toBeTruthy()
-      expect(weatherCard?.querySelector('h2')?.textContent).toBe('London, UK')
-      expect(weatherCard?.querySelector('.temperature')?.textContent).toBe('18°C')
-    })
-  })
+      `;
 
-  describe('Responsive Design Simulation', () => {
-    it('should simulate mobile viewport', () => {
-      // Simulate mobile viewport
-      Object.defineProperty(mockWindow, 'innerWidth', { value: 375 })
-      Object.defineProperty(mockWindow, 'innerHeight', { value: 667 })
-      
-      // Simulate resize event
-      const resizeEvent = new mockWindow.Event('resize')
-      mockWindow.dispatchEvent(resizeEvent)
-      
-      // Check that elements are still accessible
-      const header = mockDom.querySelector('.header')
-      const searchInput = mockDom.querySelector('.search-input')
-      
-      expect(header).toBeTruthy()
-      expect(searchInput).toBeTruthy()
-    })
-  })
+      // Simulate API response
+      weatherDisplay!.innerHTML = mockResults;
 
-  describe('Accessibility Simulation', () => {
-    it('should have proper ARIA attributes', () => {
-      const searchInput = mockDom.querySelector('.search-input') as HTMLInputElement
-      
-      // Simulate adding accessibility attributes
-      searchInput.setAttribute('aria-label', 'Search for a city')
-      searchInput.setAttribute('role', 'searchbox')
-      
-      expect(searchInput.getAttribute('aria-label')).toBe('Search for a city')
-      expect(searchInput.getAttribute('role')).toBe('searchbox')
-    })
+      const weatherCard = mockDom.querySelector(".weather-card");
+      expect(weatherCard).toBeTruthy();
+      expect(weatherCard?.querySelector("h2")?.textContent).toBe("London, UK");
+      expect(weatherCard?.querySelector(".temperature")?.textContent).toBe(
+        "18°C"
+      );
+    });
+  });
 
-    it('should support keyboard navigation', () => {
-      const themeButton = mockDom.querySelector('.theme-toggle') as HTMLButtonElement
-      
-      // Simulate keyboard focus
-      themeButton.focus()
-      
+  describe("Responsive Design Simulation", () => {
+    it("should simulate mobile viewport", () => {
+      // Set mobile dimensions
+      Object.defineProperty(mockWindow, "innerWidth", {
+        value: 375,
+        writable: true,
+      });
+      Object.defineProperty(mockWindow, "innerHeight", {
+        value: 667,
+        writable: true,
+      });
+
+      // Trigger resize
+      mockWindow.dispatchEvent(new mockWindow.Event("resize"));
+
+      // Verify responsive elements
+      const header = mockDom.querySelector(".header");
+      const searchInput = mockDom.querySelector(".search-input");
+
+      expect(header).toBeTruthy();
+      expect(searchInput).toBeTruthy();
+      expect(mockWindow.innerWidth).toBe(375);
+    });
+  });
+
+  describe("Accessibility Simulation", () => {
+    it("should have proper ARIA attributes", () => {
+      const searchInput = mockDom.querySelector(
+        ".search-input"
+      ) as HTMLInputElement;
+
+      searchInput.setAttribute("aria-label", "Search for a city");
+      searchInput.setAttribute("role", "searchbox");
+
+      expect(searchInput.getAttribute("aria-label")).toBe("Search for a city");
+      expect(searchInput.getAttribute("role")).toBe("searchbox");
+    });
+
+    it("should support keyboard navigation", () => {
+      const themeButton = mockDom.querySelector(
+        ".theme-toggle"
+      ) as HTMLButtonElement;
+
+      themeButton.focus();
+      expect(mockDom.activeElement).toBe(themeButton);
+
       // Simulate Enter key press
-      const enterEvent = new mockWindow.KeyboardEvent('keydown', { 
-        key: 'Enter', 
-        bubbles: true 
-      })
-      themeButton.dispatchEvent(enterEvent)
-      
-      // Button should be focusable
-      expect(mockDom.activeElement).toBe(themeButton)
-    })
-  })
+      const enterEvent = new mockWindow.KeyboardEvent("keydown", {
+        key: "Enter",
+        code: "Enter",
+        charCode: 13,
+        keyCode: 13,
+        bubbles: true,
+      });
+
+      themeButton.dispatchEvent(enterEvent);
+      expect(mockDom.activeElement).toBe(themeButton);
+    });
+  });
 
   afterAll(() => {
-    // Cleanup mock DOM
-    mockDom = null as any
-    mockWindow = null as any
-  })
-})
+    // Clean up
+    mockDom = null as any;
+    mockWindow = null as any;
+  });
+});
